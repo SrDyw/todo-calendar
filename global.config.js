@@ -1,0 +1,1 @@
+export const navsize = 70;
