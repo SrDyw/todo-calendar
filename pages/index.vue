@@ -23,7 +23,7 @@ useHead({
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* padding-top: 70px; */
   background: #363c4f;
 }
 </style>

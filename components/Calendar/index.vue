@@ -14,6 +14,7 @@ const curr_day = ref(0);
 const prefix = ref("th");
 const currentMonth = date.getMonth();
 const currentYear = date.getFullYear();
+const panconjamondelmespasado = ref(0);
 // Create an array with all month of the year
 const months = [
   "January",
@@ -43,6 +44,10 @@ const updateCalendar = () => {
   if (curr_day === 1) prefix.value = "st";
   if (curr_day === 2) prefix.value = "nd";
   if (curr_day === 3) prefix.value = "rd";
+
+  panconjamondelmespasado.value = lastDateOfPrevMonth.getUTCDay() + 1;
+
+  // console.log(date.toLocaleDateString('en-EN', { weekday: 'long'}));
 };
 onMounted(() => {
   const calendar = document.querySelector(".calendar");
@@ -126,25 +131,32 @@ updateCalendar();
       </ul>
       <ul class="days">
         <!-- Prev Month Days -->
-        <li v-for="day in firstWeekDay" :key="day" class="inactive">
-            {{ lastDayOfPrevMonth - (firstWeekDay - day) }}
-        </li>
+        <CalendarDay
+          v-for="dayNumber in panconjamondelmespasado"
+          :key="dayNumber"
+          :day="lastDayOfPrevMonth - (panconjamondelmespasado - dayNumber)"
+          :is-out-month="true"
+        />
 
         <!-- Current Month Days -->
-        <li
-          v-for="day in daysInMonth"
-          :key="day"
-          :class="{
-            active:
-              day === curr_day && currentYear == year && currentMonth == month,
-          }"
-        >
-          {{ day }}
-        </li>
+        <CalendarDay
+          v-for="dayNumber in daysInMonth"
+          :key="dayNumber"
+          :day="dayNumber"
+          :is-active="
+            dayNumber === curr_day &&
+            currentYear == year &&
+            currentMonth == month
+          "
+        />
 
-        <li v-for="day in lastWeekDay" :key="day" class="inactive">
-          {{ day }}
-        </li>
+        <!-- First next Month days -->
+        <CalendarDay
+          v-for="dayNumber in lastWeekDay"
+          :key="dayNumber"
+          :day="dayNumber"
+          :is-out-month="true"
+        />
       </ul>
     </div>
   </div>
@@ -165,8 +177,9 @@ updateCalendar();
   padding: 15px;
   margin: 5px;
   max-width: 900px;
-  height: 80vh;
-  transition: 0.2s;
+  /* min-height: 535px; */
+  /* height: 80vh; */
+  transition: height 0.2s ;
   border-radius: var(--round);
 }
 
@@ -210,6 +223,7 @@ updateCalendar();
   color: var(--font-color);
   background: transparent;
   transition: 0.2s;
+  overflow: hidden;
 }
 
 .wrapper-btn:hover {
@@ -231,21 +245,18 @@ updateCalendar();
 }
 
 @keyframes fade_left {
-  0% {
-    transform: translateX(0);
+  0%,
+  100% {
+    transform: translate(0, 0);
     opacity: 1;
   }
   50% {
-    transform: translateX(var(--translation-value));
+    transform: translate(0, var(--translation-value));
     opacity: 0;
   }
   60% {
-    transform: translateX(calc(-1 * var(--translation-value)));
+    transform: translate(10px, 0);
     opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
   }
 }
 
