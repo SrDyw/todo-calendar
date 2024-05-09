@@ -270,7 +270,7 @@ updateCalendar();
   text-align: end;
   padding-top: 30px;
   padding-right: 10px;
-  border: 1px solid #e7e7e7;
+  border: 1px solid #fafafa;
   transition: 0.2s;
   background: transparent;
 }
