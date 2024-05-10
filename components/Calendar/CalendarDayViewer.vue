@@ -22,6 +22,18 @@ const prefix = getDayPrefix(props.data?.dayNumber);
         <h3>{{ data.activity.description }}</h3>
       </div>
     </div>
+
+    <div class="no-data" v-if="data.activity == null">
+      <p>There is not events here...</p>
+      <UButton
+        icon="i-heroicons-pencil-square"
+        size="sm"
+        color="primary"
+        variant="solid"
+        label="Add one"
+        :trailing="false"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,6 +45,7 @@ const prefix = getDayPrefix(props.data?.dayNumber);
   margin: auto;
   border-radius: 10px;
   border: 1px solid #1c3997;
+  position: relative;
 }
 
 .picker-wrapper .header {
@@ -63,5 +76,19 @@ const prefix = getDayPrefix(props.data?.dayNumber);
 .day-basic-info h3 {
   font-size: 1rem;
   font-weight: normal;
+}
+
+.no-data {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
