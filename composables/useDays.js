@@ -20,17 +20,17 @@ export default async function useDays(month, year) {
       const currMonthData = [];
       const nextMonthData = [];
 
-      console.log(dateData.lastDaysOfPrevMonth);
-
       for (let day of dateData.lastDaysOfPrevMonth) {
         prevMonthData.push({
           dayNumber: day,
+          month: month == 0 ? 11 : month - 1,
           activity: getDataTest("Random title " + day),
         });
       }
       for (let day = 1; day <= dateData.daysInMonth; day++) {
         currMonthData.push({
           dayNumber: day,
+          month,
           activity: getDataTest("Random title " + day),
         });
       }
@@ -38,6 +38,7 @@ export default async function useDays(month, year) {
       for (let day = 1; day <= dateData.firstDaysOfNextMonth.length; day++) {
         nextMonthData.push({
           dayNumber: day,
+          month: month == 11 ? 0 : month + 1,
           activity: getDataTest("Random title " + day),
         });
       }

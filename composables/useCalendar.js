@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { weekDays, months } from "@/constants.js";
 import useDate from "./useDate";
 import useDays from "./useDays";
+import { useUtils } from "./useUtils";
 
 export default function useCalendar() {
   const date = new Date();
@@ -26,10 +27,11 @@ export default function useCalendar() {
     isLoadingData.value = true;
     daysData.value = null;
 
+    const { getDayPrefix } = useUtils();
+
     useDays(month.value, year.value).then((data) => {
       daysData.value = data;
       isLoadingData.value = false;
-      console.log(daysData.value);
     });
     const dateData = useDate(month.value, year.value);
     daysInMonth.value = dateData.daysInMonth;
@@ -38,7 +40,7 @@ export default function useCalendar() {
     firstWeekDay.value = dateData.firstWeekDay;
     lastWeekDay.value = dateData.lastWeekDay;
 
-    prefix.value = dateData.getDayPrefix(curr_day);
+    prefix.value = getDayPrefix(curr_day);
     lastWeekDayOfPrevMonth.value = dateData.lastWeekDayOfPrevMonth;
   };
 

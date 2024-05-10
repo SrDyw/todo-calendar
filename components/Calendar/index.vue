@@ -3,6 +3,8 @@ import { ref, onMounted } from "vue";
 import { weekDays, months } from "@/constants.js";
 import useCalendar from "@/composables/useCalendar.js";
 
+import CalendarDay from "@/components/Calendar/CalendarDay.vue";
+
 const {
   month,
   year,
@@ -26,9 +28,25 @@ onMounted(() => {
   setupCalendar();
 });
 updateCalendar();
+
+const dayViewerOpen = ref(false);
+const dayPickedData = ref();
+
+const handleOnDayClick = (payload) => {
+  const { data } = payload;
+  if (data) {
+    dayViewerOpen.value = true;
+    dayPickedData.value = data;
+  }
+};
 </script>
 
 <template>
+  <div>
+    <UModal v-model="dayViewerOpen">
+      <CalendarDayViewer :data="dayPickedData"/>
+    </UModal>
+  </div>
   <div class="wrapper">
     <div class="header">
       <p
@@ -69,6 +87,7 @@ updateCalendar();
           :data="daysData?.prevMonthData[dayNumber - 1]"
           :loading="isLoadingData"
           :is-hidden="lastWeekDayOfPrevMonth >= 7"
+          @onDayClick="handleOnDayClick"
         />
 
         <!-- Current Month Days -->
@@ -83,6 +102,7 @@ updateCalendar();
           "
           :data="daysData?.currMonthData[dayNumber - 1]"
           :loading="isLoadingData"
+          @onDayClick="handleOnDayClick"
         />
 
         <!-- First next Month days -->
@@ -94,6 +114,7 @@ updateCalendar();
           :loading="isLoadingData"
           :data="daysData?.nextMonthData[dayNumber - 1]"
           :is-hidden="lastWeekDay >= 7"
+          @onDayClick="handleOnDayClick"
         />
       </ul>
     </div>

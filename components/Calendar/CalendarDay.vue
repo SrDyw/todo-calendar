@@ -1,7 +1,7 @@
 <script setup>
 import { defineComponent } from "@vue/composition-api";
 
-import { computed } from "vue";
+import { ref, computed } from "vue";
 const props = defineProps({
   day: Number,
   isActive: Boolean,
@@ -11,15 +11,28 @@ const props = defineProps({
   isHidden: Boolean,
 });
 
+const viewerOpen = ref(false);
+
 const displayData = computed(() => {
   return props.data && props.data.activity
     ? props.data.activity.title
     : "No event here";
 });
+
+const emit = defineEmits(["onDayClick"]);
+const onDayClick = () => {
+  emit("onDayClick", {
+    data: props.data,
+  });
+};
 </script>
 
 <template>
-  <li :class="{ active: isActive, inactive: isOutMonth }" v-if="!isHidden">
+  <li
+    :class="{ active: isActive, inactive: isOutMonth }"
+    v-if="!isHidden"
+    @click="onDayClick"
+  >
     <UTooltip :text="!loading ? displayData : 'Loading'">
       <span>
         {{ day }}
@@ -31,6 +44,13 @@ const displayData = computed(() => {
       :style="'--i:' + day"
     ></span>
   </li>
+  <div>
+    <UModal v-model="viewerOpen">
+      <div class="p-4">
+        <Placeholder class="h-48" />
+      </div>
+    </UModal>
+  </div>
 </template>
 <style scoped>
 .days li {
@@ -88,13 +108,12 @@ const displayData = computed(() => {
   transition: 0.2s;
   transition-delay: calc(var(--i) * 0.05);
   opacity: 0;
-
 }
-.active .with-task  {
+.active .with-task {
   background: white;
   opacity: 1;
 }
-.inactive .with-task  {
+.inactive .with-task {
   opacity: 0.3;
 }
 
