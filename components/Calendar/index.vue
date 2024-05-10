@@ -1,116 +1,46 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { weekDays, months } from "@/constants.js";
+import useCalendar from "@/composables/useCalendar.js";
 
-const date = new Date();
+const {
+  month,
+  year,
+  curr_day,
+  currentMonth,
+  daysInMonth,
 
-const daysInMonth = ref(0);
-const lastDayOfPrevMonth = ref(0);
-const firstWeekDay = ref(0);
-const lastWeekDay = ref(0);
-const month = ref(date.getMonth());
-const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const year = ref(date.getFullYear());
-const curr_day = ref(0);
-const prefix = ref("th");
-const currentMonth = date.getMonth();
-const currentYear = date.getFullYear();
-const panconjamondelmespasado = ref(0);
-// Create an array with all month of the year
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-const updateCalendar = () => {
-  const lastDateOfMonth = new Date(year.value, month.value + 1, 0);
-  const lastDateOfPrevMonth = new Date(year.value, month.value, 0);
-  daysInMonth.value = lastDateOfMonth.getDate();
+  lastDayOfPrevMonth,
+  firstWeekDay,
+  lastWeekDay,
+  prefix,
+  currentYear,
+  lastWeekDayOfPrevMonth,
+  updateCalendar,
+  setupCalendar,
+  isLoadingData,
+  daysData,
+} = useCalendar();
 
-  lastDayOfPrevMonth.value = lastDateOfPrevMonth.getDate();
-  firstWeekDay.value = lastDateOfMonth.getDay();
-  lastWeekDay.value =
-    7 - new Date(year.value, month.value + 1, daysInMonth.value).getDay();
-  curr_day.value = date.getDate();
-  prefix.value = "th";
-  if (curr_day === 1) prefix.value = "st";
-  if (curr_day === 2) prefix.value = "nd";
-  if (curr_day === 3) prefix.value = "rd";
-
-  panconjamondelmespasado.value = lastDateOfPrevMonth.getUTCDay() + 1;
-
-  // console.log(date.toLocaleDateString('en-EN', { weekday: 'long'}));
-};
 onMounted(() => {
-  const calendar = document.querySelector(".calendar");
-  let timeOutToReset = null,
-    timeOutToChange = null;
-  const smoothTransitionBtwDates = (targetMonth, targetYear) => {
-    const baseTimeTransition = 0.5;
-    const smoothTags = ["calendar-smooth-left", "calendar-smooth-right"];
-    if (
-      !calendar.classList.contains(smoothTags[0]) &&
-      !calendar.classList.contains(smoothTags[1])
-    ) {
-      if (
-        targetYear < year.value ||
-        (targetYear == year.value && targetMonth < month.value)
-      )
-        calendar.classList.add(smoothTags[0]);
-      else calendar.classList.add(smoothTags[1]);
-
-      timeOutToChange = setTimeout(() => {
-        month.value = targetMonth;
-        year.value = targetYear;
-        updateCalendar();
-        clearTimeout(timeOutToChange);
-      }, baseTimeTransition * 500);
-
-      timeOutToReset = setTimeout(() => {
-        calendar.classList.remove(smoothTags[0]);
-        calendar.classList.remove(smoothTags[1]);
-
-        clearTimeout(timeOutToReset);
-      }, baseTimeTransition * 1000);
-    }
-  };
-
-  const wr_btns = document.querySelectorAll(".wrapper-btn");
-  const todays_date = document.querySelector(".todays-date");
-  wr_btns.forEach((w) => {
-    w.addEventListener("click", () => {
-      if (w.id == "wr-left") {
-        if (month.value > 0)
-          smoothTransitionBtwDates(month.value - 1, year.value);
-        else smoothTransitionBtwDates(11, year.value - 1);
-      }
-      if (w.id == "wr-right") {
-        if (month.value < 11)
-          smoothTransitionBtwDates(month.value + 1, year.value);
-        else smoothTransitionBtwDates(0, year.value + 1);
-      }
-    });
-  });
-
-  todays_date.addEventListener("click", () => {
-    smoothTransitionBtwDates(date.getMonth(), date.getFullYear());
-  });
+  setupCalendar();
 });
-
 updateCalendar();
 </script>
 
 <template>
   <div class="wrapper">
     <div class="header">
+      <p
+        class="loading-msg"
+        :class="isLoadingData ? 'loading-active' : 'loading-inactive'"
+      >
+        Cargando nuevos datos
+        <span style="--i: 0">.</span>
+        <span style="--i: 0.2">.</span>
+        <span style="--i: 0.4">.</span>
+      </p>
+
       <span class="wrapper-btn" id="wr-left">
         <UIcon name="i-material-symbols:arrow-back-ios" dynamic />
       </span>
@@ -132,10 +62,13 @@ updateCalendar();
       <ul class="days">
         <!-- Prev Month Days -->
         <CalendarDay
-          v-for="dayNumber in panconjamondelmespasado"
+          v-for="dayNumber in lastWeekDayOfPrevMonth"
           :key="dayNumber"
-          :day="lastDayOfPrevMonth - (panconjamondelmespasado - dayNumber)"
+          :day="lastDayOfPrevMonth - (lastWeekDayOfPrevMonth - dayNumber)"
           :is-out-month="true"
+          :data="daysData?.prevMonthData[dayNumber - 1]"
+          :loading="isLoadingData"
+          :is-hidden="lastWeekDayOfPrevMonth >= 7"
         />
 
         <!-- Current Month Days -->
@@ -148,6 +81,8 @@ updateCalendar();
             currentYear == year &&
             currentMonth == month
           "
+          :data="daysData?.currMonthData[dayNumber - 1]"
+          :loading="isLoadingData"
         />
 
         <!-- First next Month days -->
@@ -156,6 +91,9 @@ updateCalendar();
           :key="dayNumber"
           :day="dayNumber"
           :is-out-month="true"
+          :loading="isLoadingData"
+          :data="daysData?.nextMonthData[dayNumber - 1]"
+          :is-hidden="lastWeekDay >= 7"
         />
       </ul>
     </div>
@@ -179,7 +117,7 @@ updateCalendar();
   max-width: 900px;
   /* min-height: 535px; */
   /* height: 80vh; */
-  transition: height 0.2s ;
+  transition: height 0.2s;
   border-radius: var(--round);
 }
 
@@ -190,8 +128,46 @@ updateCalendar();
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
+  position: relative;
 }
 
+.loading-msg {
+  position: absolute;
+  bottom: -30px;
+  right: 50%;
+  transform: translateX(50%);
+  font-size: 0.85rem;
+  color: rgb(87, 201, 87);
+  font-weight: lighter;
+}
+
+.loading-msg > span {
+  position: relative;
+
+  animation: loading 1s linear infinite;
+  animation-delay: calc(var(--i) * 1s);
+}
+
+.loading-active {
+  bottom: -30px;
+
+  opacity: 1;
+  transition: 0.4s;
+}
+.loading-inactive {
+  bottom: -35px;
+  opacity: 0;
+  transition: 0.4s;
+}
+@keyframes loading {
+  0%,
+  100% {
+    top: 0;
+  }
+  50% {
+    top: -2px;
+  }
+}
 .date {
   display: flex;
   flex-direction: column;
@@ -276,34 +252,5 @@ updateCalendar();
   display: flex;
   flex-wrap: wrap;
   cursor: pointer;
-}
-.days li {
-  text-align: end;
-  padding-top: 30px;
-  padding-right: 10px;
-  border: 1px solid #fafafa;
-  transition: 0.2s;
-  background: transparent;
-}
-
-.days li:hover {
-  border: 1px solid #bdbdbd;
-  background: #e9e9e9;
-}
-.days .inactive {
-  color: #afafaf;
-}
-
-.days .active {
-  background: var(--active-color);
-  color: white;
-  font-weight: bolder;
-  font-size: 1.25rem;
-  border: 1px solid #e7e7e7;
-}
-
-.days .active:hover {
-  background: rgb(221, 137, 214);
-  border: 1px solid white;
 }
 </style>

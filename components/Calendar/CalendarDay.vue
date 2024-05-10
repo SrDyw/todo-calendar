@@ -1,14 +1,108 @@
 <script setup>
 import { defineComponent } from "@vue/composition-api";
 
+import { computed } from "vue";
 const props = defineProps({
   day: Number,
   isActive: Boolean,
   isOutMonth: Boolean,
+  data: Object,
+  loading: Boolean,
+  isHidden: Boolean,
 });
 
+const displayData = computed(() => {
+  return props.data && props.data.activity
+    ? props.data.activity.title
+    : "No event here";
+});
 </script>
 
 <template>
-  <li :class="{ active: isActive, inactive: isOutMonth }">{{ day }}</li>
+  <li :class="{ active: isActive, inactive: isOutMonth }" v-if="!isHidden">
+    <UTooltip :text="!loading ? displayData : 'Loading'">
+      <span>
+        {{ day }}
+      </span>
+    </UTooltip>
+    <span
+      class="bottom-line"
+      :class="{ 'with-task': props.data && props.data.activity }"
+      :style="'--i:' + day"
+    ></span>
+  </li>
 </template>
+<style scoped>
+.days li {
+  text-align: end;
+
+  border: 1px solid #fafafa;
+  transition: 0.2s;
+  background: transparent;
+  position: relative;
+}
+
+.days li:hover {
+  border: 1px solid #bdbdbd;
+  background: #e9e9e9;
+}
+.days .inactive {
+  color: #afafaf;
+}
+
+.days .active {
+  background: var(--active-color);
+  color: white;
+  font-weight: bolder;
+  font-size: 1.25rem;
+  border: 1px solid #e7e7e7;
+}
+
+.days .active:hover {
+  background: rgb(221, 137, 214);
+  border: 1px solid white;
+}
+
+.days li > div {
+  width: 100%;
+  height: 100%;
+
+  padding-top: 30px;
+  padding-bottom: 15px;
+  padding-right: 10px;
+}
+.days li > div span {
+  width: 100%;
+  height: 100%;
+}
+
+.bottom-line {
+  position: absolute;
+  height: 5px;
+  width: 90%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  opacity: 0.5;
+  bottom: -3px;
+  transition: 0.2s;
+  transition-delay: calc(var(--i) * 0.05);
+  opacity: 0;
+
+}
+.active .with-task  {
+  background: white;
+  opacity: 1;
+}
+.inactive .with-task  {
+  opacity: 0.3;
+}
+
+.with-task {
+  background: #211736;
+  bottom: 3px;
+  transition: 0.2s;
+  transition-delay: calc(var(--i) * 0.005s);
+  opacity: 0.5;
+}
+</style>
