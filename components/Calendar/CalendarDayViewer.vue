@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import { useUtils } from "~/composables/useUtils";
 import { months } from "~/constants";
 
-
 const props = defineProps({
   data: Object,
 });
@@ -14,18 +13,26 @@ const prefix = getDayPrefix(props.data?.dayNumber);
 <template>
   <div class="picker-wrapper">
     <div class="header">
-      <h2>{{ data.dayNumber }}{{ prefix }} of {{months[data.month]}}</h2>
+      <h2>
+        {{ data.dayNumber }}{{ prefix }}
+        <span class="opacity-50">of {{ months[data.month] }}</span>
+      </h2>
+      <div v-if="data.activity" class="w-full day-basic-info">
+        <h2>{{ data.activity.title }}</h2>
+        <h3>{{ data.activity.description }}</h3>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .picker-wrapper {
-  background: #242938;
+  background: #151b2c;
   width: 100%;
   min-height: 400px;
   margin: auto;
   border-radius: 10px;
+  border: 1px solid #1c3997;
 }
 
 .picker-wrapper .header {
@@ -34,6 +41,27 @@ const prefix = getDayPrefix(props.data?.dayNumber);
   align-items: center;
   font-size: 1.25rem;
   font-weight: bolder;
+  padding: 20px;
+  flex-direction: column;
+}
+
+.picker-wrapper .header h2 {
+  margin-bottom: 10px;
+}
+
+.day-basic-info {
+  border: 1px solid #ffffff23;
+  border-radius: 10px;
   padding: 10px;
+  background: #0208167a;
+}
+.day-basic-info h2 {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.day-basic-info h3 {
+  font-size: 1rem;
+  font-weight: normal;
 }
 </style>
