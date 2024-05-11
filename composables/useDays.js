@@ -16,6 +16,24 @@ export default async function useDays(month, year) {
             }
           : null;
 
+      const getTODOtest = () => {
+        const todo = [];
+        let hour = 0;
+        while (hour <= 23) {
+          let initialHour =(hour < 10 ? '0' : '') + hour + ":00";
+          hour += Math.max(Math.floor(Math.random() * 23), 1);
+          let endHour = Math.min(hour, 23) + ":00";
+
+          todo.push({
+            initialHour,
+            endHour,
+            tag: `Task ${hour}`,
+          });
+        }
+
+        return todo;
+      };
+
       const prevMonthData = [];
       const currMonthData = [];
       const nextMonthData = [];
@@ -31,7 +49,10 @@ export default async function useDays(month, year) {
         currMonthData.push({
           dayNumber: day,
           month,
-          activity: getDataTest("Random title " + day),
+          activity: getDataTest(
+            "Random title " + day,
+            Math.random() > 0.25 ? getTODOtest() : []
+          ),
         });
       }
 

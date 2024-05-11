@@ -8,6 +8,48 @@ const props = defineProps({
 });
 const { getDayPrefix } = useUtils();
 const prefix = getDayPrefix(props.data?.dayNumber);
+
+const todoList = props.data.activity?.todoList;
+const filteredTodoList = ref(null);
+const leftActivities = ref(0);
+
+if (todoList) {
+  const sortedTodoList = todoList.sort(
+    (a, b) => a.initialHour - b.initialHour >= 0
+  ); // Sort by due date ascending
+
+  // Get current hour
+  const now = new Date();
+  // let currentHour = 5;
+  let currentHour = now.getHours();
+
+  let minDistance = 24;
+  let breakPointIndex = -1;
+
+  function getHour(timeString) {
+    // Divide la cadena en horas y minutos
+    let [hour, minute] = timeString.split(":");
+
+    // Convierte la hora a un número y la devuelve
+    return parseInt(hour);
+  }
+  for (let i = 0; i < sortedTodoList.length; i++) {
+    const hour = getHour(sortedTodoList[i].endHour);
+    if (currentHour >= hour) continue;
+
+    const distance = Math.abs(hour - currentHour);
+    if (distance < minDistance) {
+      minDistance = distance;
+      breakPointIndex = i;
+    }
+  }
+  filteredTodoList.value = sortedTodoList.slice(
+    breakPointIndex,
+    breakPointIndex + 3
+  );
+
+  leftActivities.value = todoList.length - (breakPointIndex + 3);
+}
 </script>
 
 <template>
@@ -22,17 +64,41 @@ const prefix = getDayPrefix(props.data?.dayNumber);
         <h3>{{ data.activity.description }}</h3>
       </div>
     </div>
+    <div class="no-section">
+      <div class="no-data" v-if="data.activity == null">
+        <p>There is not events here...</p>
+        <UButton
+          icon="i-heroicons-pencil-square"
+          size="sm"
+          color="primary"
+          variant="solid"
+          label="Add one"
+          :trailing="false"
+        />
+      </div>
 
-    <div class="no-data" v-if="data.activity == null">
-      <p>There is not events here...</p>
-      <UButton
-        icon="i-heroicons-pencil-square"
-        size="sm"
-        color="primary"
-        variant="solid"
-        label="Add one"
-        :trailing="false"
+      <div class="no-activities" v-if="data.activity?.todoList.length == 0">
+        <p>There is not activities for this event</p>
+        <UButton
+          icon="i-heroicons-pencil-square"
+          size="sm"
+          color="primary"
+          variant="solid"
+          label="Add one"
+          :trailing="false"
+        />
+      </div>
+    </div>
+
+    <div class="todo-list" v-if="filteredTodoList?.length > 0">
+      <CalendarDayViewerTodo
+        v-for="todo of filteredTodoList"
+        :key="todo"
+        :data="todo"
       />
+      <div class="buttom-more">
+        <CalendarDayFullViewer :leftActivities="leftActivities" :data="data" />
+      </div>
     </div>
   </div>
 </template>
@@ -46,6 +112,7 @@ const prefix = getDayPrefix(props.data?.dayNumber);
   border-radius: 10px;
   border: 1px solid #1c3997;
   position: relative;
+  padding: 10px;
 }
 
 .picker-wrapper .header {
@@ -54,8 +121,8 @@ const prefix = getDayPrefix(props.data?.dayNumber);
   align-items: center;
   font-size: 1.25rem;
   font-weight: bolder;
-  padding: 20px;
   flex-direction: column;
+  margin-bottom: 10px;
 }
 
 .picker-wrapper .header h2 {
@@ -63,7 +130,7 @@ const prefix = getDayPrefix(props.data?.dayNumber);
 }
 
 .day-basic-info {
-  border: 1px solid #ffffff23;
+  /* border: 1px solid #ffffff23; */
   border-radius: 10px;
   padding: 10px;
   background: #0208167a;
@@ -76,6 +143,7 @@ const prefix = getDayPrefix(props.data?.dayNumber);
 .day-basic-info h3 {
   font-size: 1rem;
   font-weight: normal;
+  padding: 10px;
 }
 
 .no-data {
@@ -90,5 +158,36 @@ const prefix = getDayPrefix(props.data?.dayNumber);
   text-align: center;
   flex-direction: column;
   gap: 10px;
+}
+
+.no-activities {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.todo-list {
+  background: #0c1222;
+  width: 100%;
+  min-height: 100px;
+  margin: auto;
+  border-radius: 10px;
+  border: 1px solid #1c3997;
+  position: relative;
+  padding: 20px;
+}
+
+.buttom-more {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, 20px);
 }
 </style>

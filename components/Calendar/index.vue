@@ -44,7 +44,14 @@ const handleOnDayClick = (payload) => {
 <template>
   <div>
     <UModal v-model="dayViewerOpen">
-      <CalendarDayViewer :data="dayPickedData"/>
+      <CalendarDayViewer :data="dayPickedData" />
+      <UButton
+        color="gray"
+        variant="ghost"
+        icon="i-heroicons-x-mark-20-solid"
+        class="absolute right-0"
+        @click="dayViewerOpen = false"
+      />
     </UModal>
   </div>
   <div class="wrapper">
@@ -165,7 +172,7 @@ const handleOnDayClick = (payload) => {
 .loading-msg > span {
   position: relative;
 
-  animation: loading 1s linear infinite;
+  animation: loading 1s ease-in-out infinite;
   animation-delay: calc(var(--i) * 1s);
 }
 
@@ -182,6 +189,7 @@ const handleOnDayClick = (payload) => {
 }
 @keyframes loading {
   0%,
+  40%,
   100% {
     top: 0;
   }
