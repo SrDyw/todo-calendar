@@ -6,10 +6,12 @@ import { months } from "~/constants";
 const props = defineProps({
   data: Object,
 });
-const { getDayPrefix } = useUtils();
-const prefix = getDayPrefix(props.data?.dayNumber);
+const dayData = ref(props.data);
 
-const todoList = props.data.activity?.todoList;
+const { getDayPrefix } = useUtils();
+const prefix = getDayPrefix(dayData?.dayNumber);
+
+const todoList = dayData.value.activity?.todoList;
 const filteredTodoList = ref(null);
 const leftActivities = ref(0);
 
@@ -50,34 +52,42 @@ if (todoList) {
 
   leftActivities.value = todoList.length - (breakPointIndex + 3);
 }
+
+const emit = defineEmits(["onDayChange"]);
+const onDayChange = (payload) => {
+  const date = new Date();
+  // const month = payload
+
+  emit("onDayChange", { ...payload });
+};
+
+const onCreatedEvent = (payload) => {
+  const event = payload.event;
+  dayData.value = { ...dayData.value, activity: event };
+
+  onDayChange(dayData.value);
+};
 </script>
 
 <template>
   <div class="picker-wrapper">
     <div class="header">
       <h2>
-        {{ data.dayNumber }}{{ prefix }}
-        <span class="opacity-50">of {{ months[data.month] }}</span>
+        {{ dayData.dayNumber }}{{ prefix }}
+        <span class="opacity-50">of {{ months[dayData.month] }}</span>
       </h2>
-      <div v-if="data.activity" class="w-full day-basic-info">
-        <h2>{{ data.activity.title }}</h2>
-        <h3>{{ data.activity.description }}</h3>
+      <div v-if="dayData.activity" class="w-full day-basic-info">
+        <h2>{{ dayData.activity.title }}</h2>
+        <h3>{{ dayData.activity.description }}</h3>
       </div>
     </div>
     <div class="no-section">
-      <div class="no-data" v-if="data.activity == null">
+      <div class="no-data" v-if="dayData.activity == null">
         <p>There is not events here...</p>
-        <UButton
-          icon="i-heroicons-pencil-square"
-          size="sm"
-          color="primary"
-          variant="solid"
-          label="Add one"
-          :trailing="false"
-        />
+        <CalendarAddDayModal @on-created-event="onCreatedEvent" />
       </div>
 
-      <div class="no-activities" v-if="data.activity?.todoList.length == 0">
+      <div class="no-activities" v-if="dayData.activity?.todoList.length == 0">
         <p>There is not activities for this event</p>
         <UButton
           icon="i-heroicons-pencil-square"
@@ -96,8 +106,11 @@ if (todoList) {
         :key="todo"
         :data="todo"
       />
-      <div class="buttom-more">
-        <CalendarDayFullViewer :leftActivities="leftActivities" :data="data" />
+      <div class="event-dashboard-container">
+        <CalendarDayFullViewer
+          :leftActivities="leftActivities"
+          :data="dayData"
+        />
       </div>
     </div>
   </div>
@@ -180,7 +193,7 @@ if (todoList) {
   padding: 20px;
 }
 
-.buttom-more {
+.event-dashboard-container {
   position: absolute;
   display: flex;
   justify-content: center;

@@ -24,6 +24,8 @@ const {
   daysData,
 } = useCalendar();
 
+const mutableDaysData = ref(daysData);
+
 onMounted(() => {
   setupCalendar();
 });
@@ -39,12 +41,21 @@ const handleOnDayClick = (payload) => {
     dayPickedData.value = data;
   }
 };
+
+const onDayChange = (payload) => {
+  // const [day] = mutableDaysData.value.filter((d) => d.dayNumber === payload.dayNumber);
+  const m = mutableDaysData.value[payload.monthTag];
+  let monthClone = [...m];
+
+  monthClone[payload.index] = payload;
+  mutableDaysData.value[payload.monthTag] = monthClone;
+};
 </script>
 
 <template>
   <div>
     <UModal v-model="dayViewerOpen">
-      <CalendarDayViewer :data="dayPickedData" />
+      <CalendarDayViewer :data="dayPickedData" @on-day-change="onDayChange" />
       <UButton
         color="gray"
         variant="ghost"
@@ -91,7 +102,11 @@ const handleOnDayClick = (payload) => {
           :key="dayNumber"
           :day="lastDayOfPrevMonth - (lastWeekDayOfPrevMonth - dayNumber)"
           :is-out-month="true"
-          :data="daysData?.prevMonthData[dayNumber - 1]"
+          :data="{
+            ...mutableDaysData?.prevMonthData[dayNumber - 1],
+            index: dayNumber - 1,
+          }"
+          :pan="1"
           :loading="isLoadingData"
           :is-hidden="lastWeekDayOfPrevMonth >= 7"
           @onDayClick="handleOnDayClick"
@@ -107,7 +122,11 @@ const handleOnDayClick = (payload) => {
             currentYear == year &&
             currentMonth == month
           "
-          :data="daysData?.currMonthData[dayNumber - 1]"
+          :pan="dayNumber - 1"
+          :data="{
+            ...mutableDaysData?.currMonthData[dayNumber - 1],
+            index: dayNumber - 1,
+          }"
           :loading="isLoadingData"
           @onDayClick="handleOnDayClick"
         />
@@ -119,7 +138,11 @@ const handleOnDayClick = (payload) => {
           :day="dayNumber"
           :is-out-month="true"
           :loading="isLoadingData"
-          :data="daysData?.nextMonthData[dayNumber - 1]"
+          :pan="dayNumber - 1"
+          :data="{
+            ...mutableDaysData?.nextMonthData[dayNumber - 1],
+            index: dayNumber - 1,
+          }"
           :is-hidden="lastWeekDay >= 7"
           @onDayClick="handleOnDayClick"
         />

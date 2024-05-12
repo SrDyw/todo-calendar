@@ -20,7 +20,7 @@ export default async function useDays(month, year) {
         const todo = [];
         let hour = 0;
         while (hour <= 23) {
-          let initialHour =(hour < 10 ? '0' : '') + hour + ":00";
+          let initialHour = (hour < 10 ? "0" : "") + hour + ":00";
           hour += Math.max(Math.floor(Math.random() * 23), 1);
           let endHour = Math.min(hour, 23) + ":00";
 
@@ -40,6 +40,7 @@ export default async function useDays(month, year) {
 
       for (let day of dateData.lastDaysOfPrevMonth) {
         prevMonthData.push({
+          monthTag: "prevMonthData",
           dayNumber: day,
           month: month == 0 ? 11 : month - 1,
           activity: getDataTest("Random title " + day),
@@ -47,6 +48,7 @@ export default async function useDays(month, year) {
       }
       for (let day = 1; day <= dateData.daysInMonth; day++) {
         currMonthData.push({
+          monthTag: "currMonthData",
           dayNumber: day,
           month,
           activity: getDataTest(
@@ -59,6 +61,7 @@ export default async function useDays(month, year) {
       for (let day = 1; day <= dateData.firstDaysOfNextMonth.length; day++) {
         nextMonthData.push({
           dayNumber: day,
+          monthTag: "nextMonthData",
           month: month == 11 ? 0 : month + 1,
           activity: getDataTest("Random title " + day),
         });

@@ -2,17 +2,15 @@
 const isOpen = ref(false);
 const props = defineProps({
   leftActivities: Number,
-  data: Object
+  data: Object,
 });
-
-console.log(props.data)
 </script>
 
 <template>
   <div class="calendar-full-viewer">
     <UButton
       icon="i-heroicons-pencil-square"
-      :label="`Gestionar evento`"
+      :label="`Event Dashboard`"
       @click="isOpen = true"
     />
 
@@ -32,7 +30,7 @@ console.log(props.data)
             <h3
               class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
             >
-              Event {{data.activity.title}}
+              Event {{ data.activity.title }}
             </h3>
             <UButton
               color="gray"
