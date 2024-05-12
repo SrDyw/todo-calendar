@@ -4,6 +4,7 @@ import { weekDays, months } from "@/constants.js";
 import useCalendar from "@/composables/useCalendar.js";
 
 import CalendarDay from "@/components/Calendar/CalendarDay.vue";
+import useDays from "~/composables/useDays";
 
 const {
   month,
@@ -26,6 +27,8 @@ const {
 
 const mutableDaysData = ref(daysData);
 
+
+
 onMounted(() => {
   setupCalendar();
 });
@@ -45,10 +48,12 @@ const handleOnDayClick = (payload) => {
 const onDayChange = (payload) => {
   // const [day] = mutableDaysData.value.filter((d) => d.dayNumber === payload.dayNumber);
   const m = mutableDaysData.value[payload.monthTag];
-  let monthClone = [...m];
+  if (m) {
+    let monthClone = [...m];
 
-  monthClone[payload.index] = payload;
-  mutableDaysData.value[payload.monthTag] = monthClone;
+    monthClone[payload.index] = payload;
+    mutableDaysData.value[payload.monthTag] = monthClone;
+  }
 };
 </script>
 

@@ -1,6 +1,13 @@
 <script setup>
 import useEvents from "~/composables/useEvents";
 
+const props = defineProps({
+  data: Object
+})
+
+
+console.log(props.data);
+
 const isOpen = ref(false);
 const isLoading = ref(false);
 const state = reactive({

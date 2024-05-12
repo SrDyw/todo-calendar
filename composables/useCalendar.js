@@ -4,6 +4,7 @@ import { weekDays, months } from "@/constants.js";
 import useDate from "./useDate";
 import useDays from "./useDays";
 import { useUtils } from "./useUtils";
+import { defaultDayData } from "../constants";
 
 export default function useCalendar() {
   const date = new Date();
@@ -19,7 +20,7 @@ export default function useCalendar() {
   const currentMonth = date.getMonth();
   const currentYear = date.getFullYear();
   const lastWeekDayOfPrevMonth = ref(0);
-  const daysData = ref(null);
+  const daysData = ref(defaultDayData);
 
   const isLoadingData = ref(false);
 
@@ -29,10 +30,20 @@ export default function useCalendar() {
 
     const { getDayPrefix } = useUtils();
 
-    useDays(month.value, year.value).then((data) => {
+    const { getTestDays, getDaysFromLocal } = useDays(month.value, year.value);
+
+    // getTestDays(month.value, year.value).then((data) => {
+    //   console.log("asdasd");
+    //   daysData.value = data;
+    //   isLoadingData.value = false;
+
+    // });
+
+    getDaysFromLocal().then((data) => {
       daysData.value = data;
       isLoadingData.value = false;
     });
+
     const dateData = useDate(month.value, year.value);
     daysInMonth.value = dateData.daysInMonth;
 

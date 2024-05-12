@@ -5,6 +5,7 @@ export default function useEvents() {
     // Simulate the api response
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        console.log(data);
         resolve({ ...data, todoList: [] });
       }, Math.random() * 2000);
     });

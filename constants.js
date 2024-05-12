@@ -14,3 +14,9 @@ export const months = [
   "November",
   "December",
 ];
+
+export const defaultDayData = {
+  prevMonthData: [],
+  currMonthData: [],
+  nextMonthData: [],
+};

@@ -84,7 +84,7 @@ const onCreatedEvent = (payload) => {
     <div class="no-section">
       <div class="no-data" v-if="dayData.activity == null">
         <p>There is not events here...</p>
-        <CalendarAddDayModal @on-created-event="onCreatedEvent" />
+        <CalendarAddDayModal @on-created-event="onCreatedEvent" :data="dayData"/>
       </div>
 
       <div class="no-activities" v-if="dayData.activity?.todoList.length == 0">
