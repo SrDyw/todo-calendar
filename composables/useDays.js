@@ -79,8 +79,11 @@ export default function useDays(month, year) {
   const getDaysFromLocal = async () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const getDataFromLocaStorage = (d, m, y) =>
-          localStorage.getItem(`${d}-${m}-${y}`);
+        const getDataFromLocaStorage = (d, m, y) => {
+          return process.browser
+            ? localStorage.getItem(`${d}-${m}-${y}`)
+            : null;
+        };
 
         for (let day of dateData.lastDaysOfPrevMonth) {
           const m = month == 0 ? 11 : month - 1;
