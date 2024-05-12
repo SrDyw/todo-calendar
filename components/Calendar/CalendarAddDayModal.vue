@@ -68,7 +68,14 @@ async function onSubmit(event) {
         class="space-y-4 flex flex-col gap-4 items-center justify-between"
         @submit="onSubmit"
       >
-        <UFormGroup label="Title" class="w-full" name="title">
+        <UFormGroup
+          v-slot="{ error }"
+          label="Title"
+          class="w-full"
+          name="title"
+          :error="state.title?.length > 30 && 'Your title is too long'"
+          required
+        >
           <UInput
             size="sm"
             color="white"
@@ -76,13 +83,21 @@ async function onSubmit(event) {
             placeholder="Event name..."
             class="w-full"
             v-model="state.title"
+            required
+            help="This is a nice title!"
+            :trailing-icon="
+              error ? 'i-heroicons-exclamation-triangle-20-solid' : undefined
+            "
           />
-          <!-- <template #help>
-            A title for your event
-            <UIcon name="i-heroicons-information-circle" />
-          </template> -->
         </UFormGroup>
-        <UFormGroup label="Description" class="w-full" name="description">
+        <UFormGroup
+          label="Description"
+          class="w-full"
+          name="description"
+          :error="
+            state.description?.length > 150 && 'Your description is too long'
+          "
+        >
           <UTextarea
             class="w-full"
             color="white"
@@ -100,6 +115,7 @@ async function onSubmit(event) {
           :label="`Create event`"
           type="submit"
           :loading="isLoading"
+          :disabled="state.title?.length > 30 || state.description?.length > 150"
         />
       </UForm>
       <Placeholder class="h-full" />
