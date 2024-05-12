@@ -70,6 +70,13 @@ const onRemoveEvent = (payload) => {
   dayData.value = { ...dayData.value, activity: null };
   onDayChange(dayData.value);
 };
+let openFullViewModal;
+
+const openFullViewModalOnChange = ref(false);
+
+openFullViewModal = () => {
+  openFullViewModalOnChange.value = !openFullViewModalOnChange.value;
+};
 </script>
 
 <template>
@@ -107,6 +114,7 @@ const onRemoveEvent = (payload) => {
           variant="solid"
           label="Add one"
           :trailing="false"
+          @click="openFullViewModal"
         />
       </div>
     </div>
@@ -117,12 +125,18 @@ const onRemoveEvent = (payload) => {
         :key="todo"
         :data="todo"
       />
-      <div class="event-dashboard-container">
-        <CalendarDayFullViewer
-          :leftActivities="leftActivities"
-          :data="dayData"
-        />
-      </div>
+      <UButton
+        icon="i-heroicons-pencil-square"
+        :label="`Event Dashboard`"
+        @click="openFullViewModal"
+      />
+    </div>
+    <div class="event-dashboard-container">
+      <CalendarDayFullViewer
+        :leftActivities="leftActivities"
+        :data="dayData"
+        :open-on-change="openFullViewModalOnChange"
+      />
     </div>
   </div>
 </template>
@@ -204,6 +218,13 @@ const onRemoveEvent = (payload) => {
   border: 1px solid #1c3997;
   position: relative;
   padding: 20px;
+}
+
+.todo-list button {
+  margin: auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .event-dashboard-container {

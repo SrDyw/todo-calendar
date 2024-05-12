@@ -3,17 +3,21 @@ const isOpen = ref(false);
 const props = defineProps({
   leftActivities: Number,
   data: Object,
+  openOnChange: Boolean,
+});
+
+const onOpenModal = () => {
+  console.log("pan con queso");
+};
+const { openOnChange } = toRefs(props);
+
+watch(openOnChange, (a, b) => {
+  isOpen.value = true;
 });
 </script>
 
 <template>
   <div class="calendar-full-viewer">
-    <UButton
-      icon="i-heroicons-pencil-square"
-      :label="`Event Dashboard`"
-      @click="isOpen = true"
-    />
-
     <UModal v-model="isOpen" fullscreen>
       <UCard
         :ui="{
