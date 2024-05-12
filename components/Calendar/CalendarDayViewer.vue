@@ -62,9 +62,7 @@ const onDayChange = (payload) => {
 };
 
 const onCreatedEvent = (payload) => {
-  const event = payload.event;
-  dayData.value = { ...dayData.value, activity: event };
-
+  dayData.value = payload.event;
   onDayChange(dayData.value);
 };
 </script>

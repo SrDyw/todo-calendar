@@ -5,8 +5,26 @@ export default function useEvents() {
     // Simulate the api response
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        console.log(data);
-        resolve({ ...data, todoList: [] });
+        const event = {
+          title: data.title,
+          description: data.description,
+          todoList: [],
+        };
+
+        const dayData = {
+          ...data.payload,
+          activity: {
+            ...event,
+            todoList: [],
+          },
+        };
+
+        localStorage.setItem(
+          `${data.payload.dayNumber}-${data.payload.month}-${data.payload.year}`,
+          JSON.stringify(event)
+        );
+
+        resolve(dayData);
       }, Math.random() * 2000);
     });
   };

@@ -13,6 +13,10 @@ const props = defineProps({
 
 const viewerOpen = ref(false);
 
+if (props.data.activity) {
+  console.log(props.data);
+}
+
 const displayData = computed(() => {
   return props.data && props.data.activity
     ? props.data.activity.title

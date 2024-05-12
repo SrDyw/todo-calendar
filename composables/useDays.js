@@ -7,34 +7,6 @@ export default function useDays(month, year) {
   const currMonthData = [];
   const nextMonthData = [];
 
-  const fillMonthDatas = () => {
-    for (let day of dateData.lastDaysOfPrevMonth) {
-      prevMonthData.push({
-        monthTag: "prevMonthData",
-        dayNumber: day,
-        month: month == 0 ? 11 : month - 1,
-        activity: null,
-      });
-    }
-    for (let day = 1; day <= dateData.daysInMonth; day++) {
-      currMonthData.push({
-        monthTag: "currMonthData",
-        dayNumber: day,
-        month,
-        activity: null,
-      });
-    }
-
-    for (let day = 1; day <= dateData.firstDaysOfNextMonth.length; day++) {
-      nextMonthData.push({
-        dayNumber: day,
-        monthTag: "nextMonthData",
-        month: month == 11 ? 0 : month + 1,
-        activity: null,
-      });
-    }
-  };
-
   const getTestDays = async (month, year) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -107,13 +79,40 @@ export default function useDays(month, year) {
   const getDaysFromLocal = async () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        fillMonthDatas();
-        const data = localStorage.getItem(`${month}-${year}`);
-        console.log({
-          prevMonthData,
-          currMonthData,
-          nextMonthData,
-        });
+        const getDataFromLocaStorage = (d, m, y) =>
+          localStorage.getItem(`${d}-${m}-${y}`);
+
+        for (let day of dateData.lastDaysOfPrevMonth) {
+          const m = month == 0 ? 11 : month - 1;
+          prevMonthData.push({
+            monthTag: "prevMonthData",
+            dayNumber: day,
+            month: m,
+            year,
+            activity: JSON.parse(getDataFromLocaStorage(day, m, year)),
+          });
+        }
+        for (let day = 1; day <= dateData.daysInMonth; day++) {
+          currMonthData.push({
+            monthTag: "currMonthData",
+            dayNumber: day,
+            month,
+            year,
+            activity: JSON.parse(getDataFromLocaStorage(day, month, year)),
+          });
+        }
+
+        for (let day = 1; day <= dateData.firstDaysOfNextMonth.length; day++) {
+          const m = month == 11 ? 0 : month + 1;
+
+          nextMonthData.push({
+            dayNumber: day,
+            monthTag: "nextMonthData",
+            month: month == 11 ? 0 : month + 1,
+            year,
+            activity: JSON.parse(getDataFromLocaStorage(day, m, year)),
+          });
+        }
 
         resolve({
           prevMonthData,

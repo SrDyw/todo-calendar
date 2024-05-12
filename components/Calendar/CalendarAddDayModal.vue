@@ -6,8 +6,6 @@ const props = defineProps({
 })
 
 
-console.log(props.data);
-
 const isOpen = ref(false);
 const isLoading = ref(false);
 const state = reactive({
@@ -28,7 +26,7 @@ const onCreatedEvent = (event) => {
 async function onSubmit(event) {
   // Do something with data
   isLoading.value = true;
-  const data = await registerEvent(event.data);
+  const data = await registerEvent({...event.data, payload: props.data});
   isLoading.value = false;
   isOpen.value = false;
   toast.add({ title: "Event created successfuly!", timeout: 1600 });
