@@ -129,7 +129,7 @@ for (let h = 0; h < 24; h++) {
           <div class="viewer-sidebar mb-4">{{ data.activity.description }}</div>
           <UAlert
             icon="i-heroicons-command-line"
-            description="You can handle and hour by clicking over it"
+            description="You can manage an hour by clicking on it"
             title="Note!"
             variant="solid"
             color="primary"
