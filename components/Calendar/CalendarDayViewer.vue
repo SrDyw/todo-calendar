@@ -65,6 +65,11 @@ const onCreatedEvent = (payload) => {
   dayData.value = payload.event;
   onDayChange(dayData.value);
 };
+
+const onRemoveEvent = (payload) => {
+  dayData.value = { ...dayData.value, activity: null };
+  onDayChange(dayData.value);
+};
 </script>
 
 <template>
@@ -74,15 +79,23 @@ const onCreatedEvent = (payload) => {
         {{ dayData.dayNumber }}{{ prefix }}
         <span class="opacity-50">of {{ months[dayData.month] }}</span>
       </h2>
-      <div v-if="dayData.activity" class="w-full day-basic-info">
+
+      <div v-if="dayData.activity" class="w-full day-basic-info relative">
         <h2>{{ dayData.activity.title }}</h2>
         <h3>{{ dayData.activity.description }}</h3>
+        <CalendarDeleteEventModal
+          :data="dayData"
+          @on-remove-event="onRemoveEvent"
+        />
       </div>
     </div>
     <div class="no-section">
       <div class="no-data" v-if="dayData.activity == null">
         <p>There is not events here...</p>
-        <CalendarAddDayModal @on-created-event="onCreatedEvent" :data="dayData"/>
+        <CalendarAddDayModal
+          @on-created-event="onCreatedEvent"
+          :data="dayData"
+        />
       </div>
 
       <div class="no-activities" v-if="dayData.activity?.todoList.length == 0">
@@ -143,18 +156,20 @@ const onCreatedEvent = (payload) => {
 .day-basic-info {
   /* border: 1px solid #ffffff23; */
   border-radius: 10px;
-  padding: 10px;
+  padding: 20px;
   background: #0208167a;
 }
 .day-basic-info h2 {
   font-size: 1.1rem;
   font-weight: bold;
+  margin-bottom: 0 !important;
 }
 
 .day-basic-info h3 {
   font-size: 1rem;
   font-weight: normal;
-  padding: 10px;
+  padding-inline: 10px;
+  opacity: 0.5;
 }
 
 .no-data {

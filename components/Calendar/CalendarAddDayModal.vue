@@ -29,7 +29,7 @@ async function onSubmit(event) {
   const data = await registerEvent({...event.data, payload: props.data});
   isLoading.value = false;
   isOpen.value = false;
-  toast.add({ title: "Event created successfuly!", timeout: 1600 });
+  toast.add({ title: "Event created successfuly!", timeout: 2000 });
   onCreatedEvent(data);
 }
 </script>

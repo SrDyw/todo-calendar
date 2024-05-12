@@ -29,6 +29,18 @@ export default function useEvents() {
     });
   };
 
+  const deleteEvent = async (data) => {
+    // Simulate the api response
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        localStorage.removeItem(
+          `${data.payload.dayNumber}-${data.payload.month}-${data.payload.year}`
+        );
+        resolve({ ...data });
+      }, Math.random() * 2000);
+    });
+  };
+
   const modifyEvent = async (data) => {
     // Create the backend query for modify event
 
@@ -42,5 +54,6 @@ export default function useEvents() {
 
   return {
     registerEvent,
+    deleteEvent,
   };
 }
