@@ -14,7 +14,6 @@ useHead({
 <template>
   <div class="content">
     <Calendar />
-    <Sidebar />
   </div>
 </template>
 

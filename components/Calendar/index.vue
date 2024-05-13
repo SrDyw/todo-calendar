@@ -224,6 +224,13 @@ const travelToSelectedDate = () => {
         />
       </ul>
     </div>
+    <!-- <div class="footer">
+      <UAvatar
+        size="2xl"
+        src="https://avatars.githubusercontent.com/u/96890386?v=4"
+        alt="Avatar"
+      />
+    </div> -->
   </div>
 </template>
 
@@ -246,6 +253,16 @@ const travelToSelectedDate = () => {
   /* height: 80vh; */
   transition: height 0.2s;
   border-radius: var(--round);
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+@media (max-width: 320px) {
+  .wrapper {
+    padding: 5px;
+  }
 }
 
 .wrapper .header {
@@ -256,6 +273,7 @@ const travelToSelectedDate = () => {
   display: flex;
   justify-content: space-between;
   position: relative;
+  width: 100%;
 }
 
 .loading-msg {
@@ -389,5 +407,11 @@ const travelToSelectedDate = () => {
   display: flex;
   flex-wrap: wrap;
   cursor: pointer;
+}
+
+.footer {
+  width: 100%;
+  height: 100%;
+  background: red;
 }
 </style>

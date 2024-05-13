@@ -60,10 +60,14 @@ const isOpen = ref(false);
     right: -30px;
     border-radius: 50%;
     border: 5px solid #363c4f;
-    width: 75px !important;
-    height: 75px;
+    width: 65px;
+    height: 65px;
     aspect-ratio: 1;
     background: white;
+  }
+
+  .toggle-btn span {
+    transform: translateX(100px);
   }
 }
 </style>

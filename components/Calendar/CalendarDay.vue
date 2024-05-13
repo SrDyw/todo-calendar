@@ -91,11 +91,20 @@ const onDayClick = () => {
 .days li > div {
   width: 100%;
   height: 100%;
-
+  text-align: center;
   padding-top: 30px;
   padding-bottom: 15px;
   padding-right: 10px;
 }
+@media (max-height: 600px) {
+  .days li > div {
+
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-right: 10px;
+  }
+}
+
 .days li > div span {
   width: 100%;
   height: 100%;
