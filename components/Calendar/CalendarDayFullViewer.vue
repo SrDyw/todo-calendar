@@ -101,14 +101,13 @@ const onEventChange = (data) => {
             <h2 class="text-3xl">Activities</h2>
             <ul class="h-[60vh]">
               <li
-                v-for="todo of fullDayTodo"
+                v-for="(todo) of fullDayTodo"
                 :key="todo"
-                class="activity-hour flex gap-4"
+                class="activity-hour flex gap-4 justify-center items-center"
                 :class="{
                   'todo-inactive': !todo.tag,
                   'todo-active': todo.tag,
                 }"
-                @click="() => onClickOnEvent(todo)"
               >
                 <UCheckbox
                   v-model="todo.done"
@@ -116,10 +115,17 @@ const onEventChange = (data) => {
                   label=""
                   :disabled="!todo.tag"
                 />
-                <p>
-                  {{ todo.initialHour }}
-                  {{ todo.tag }}
-                </p>
+                <div
+                  class="activity-hour-info flex justify-between items-center"
+                >
+                  <p @click="() => onClickOnEvent(todo)" class="w-full h-full p-[10px]">
+                    {{ todo.initialHour }}
+                    {{ todo.tag }}
+                  </p>
+                  <div class="hour-delete-btn" v-if="todo.tag">
+                    <calendar-delete-activity-modal :data="todo" :payload="data" @onRemoveActivity="onEventChange"/>
+                  </div>
+                </div>
               </li>
             </ul>
           </div>
@@ -163,13 +169,18 @@ const onEventChange = (data) => {
   z-index: 1;
 }
 .activity-hour {
-  padding: 10px;
+  padding: 5px;
   font-size: 16px;
   cursor: pointer;
 }
-
-.activity-hour:hover {
-  background: #ffffff33;
+.activity-hour-info {
+  width: 100%;
+  padding-inline: 5px;
+  border-radius: 5px;
+  transition: 0.1s;
+}
+.activity-hour-info:hover {
+  background: #16213d;
 }
 
 .todo-inactive {

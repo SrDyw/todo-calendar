@@ -82,9 +82,37 @@ export default function useEvents() {
     });
   };
 
+  const removeActivity = async (data) => {
+    // Create the backend query for modify event
+    const { getHour } = useUtils();
+    // Simulate the api response
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const key = `${data.payload.dayNumber}-${data.payload.month}-${data.payload.year}`;
+        let item = JSON.parse(localStorage.getItem(key));
+
+        let todoList = item.todoList.filter(
+          (todo) =>
+            getHour(todo.initialHour) != getHour(data.todoData.initialHour)
+        );
+
+        item.todoList = todoList;
+        localStorage.setItem(key, JSON.stringify(item));
+        resolve({
+          ...data.payload,
+          activity: {
+            ...data.payload.activity,
+            todoList,
+          },
+        });
+      }, Math.random() * 2000);
+    });
+  };
+
   return {
     registerEvent,
     deleteEvent,
     modifyEvent,
+    removeActivity,
   };
 }
