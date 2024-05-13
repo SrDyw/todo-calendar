@@ -23,6 +23,7 @@ const {
   setupCalendar,
   isLoadingData,
   daysData,
+  smoothTransitionBtwDates,
 } = useCalendar();
 
 const mutableDaysData = ref(daysData);
@@ -53,10 +54,78 @@ const onDayChange = (payload) => {
     mutableDaysData.value[payload.monthTag] = monthClone;
   }
 };
+
+const years = Array.from({ length: 100 }, (_, i) => 2001 + i);
+const gotoModalIsOpen = ref(false);
+
+const monthSelected = ref(months[currentMonth]);
+const yearSelected = ref(currentYear);
+
+const travelToSelectedDate = () => {
+  smoothTransitionBtwDates(
+    months.indexOf(monthSelected.value),
+    yearSelected.value
+  );
+  gotoModalIsOpen.value = false;
+};
 </script>
 
 <template>
   <div>
+    <UModal v-model="gotoModalIsOpen">
+      <UCard
+        :ui="{
+          ring: '',
+          divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+        }"
+      >
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3
+              class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+            >
+              Go to
+            </h3>
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-x-mark-20-solid"
+              class="-my-1"
+              @click="gotoModalIsOpen = false"
+            />
+          </div>
+        </template>
+
+        <div class="flex gap-4 w-full">
+          <USelectMenu
+            v-model="monthSelected"
+            :options="months"
+            class="w-full"
+          />
+          <USelectMenu v-model="yearSelected" :options="years" class="w-full" />
+        </div>
+
+        <template #footer>
+          <div class="flex items-center justify-between">
+            <UButton
+              variant="solid"
+              color="primary"
+              label="Travel"
+              @click="travelToSelectedDate"
+              block
+            >
+              <template #trailing>
+                <UIcon
+                  name="i-heroicons-arrow-right-20-solid"
+                  class="w-5 h-5"
+                />
+              </template>
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
+
     <UModal v-model="dayViewerOpen">
       <CalendarDayViewer
         :data="dayPickedData"
@@ -88,7 +157,7 @@ const onDayChange = (payload) => {
         <UIcon name="i-material-symbols:arrow-back-ios" dynamic />
       </span>
       <h2 class="date">
-        {{ months[month] }} {{ year }}
+        <p @click="gotoModalIsOpen = true">{{ months[month] }} {{ year }}</p>
         <span class="todays-date"
           >Todays's {{ months[currentMonth] }} {{ curr_day }}{{ prefix }}
           {{ currentYear }}</span
@@ -161,7 +230,7 @@ const onDayChange = (payload) => {
 <style>
 :root {
   --font-color: #838383;
-  --active-color: rgb(228, 116, 191);
+  --active-color: #4ade80;
   --round: 5px;
   --translation-value: 10px;
   --translation-duration: 0.5s;
@@ -233,6 +302,15 @@ const onDayChange = (payload) => {
   text-align: center;
 }
 
+.date > p {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.date > p:hover {
+  color: #4ade80;
+}
+
 .date span {
   font-weight: lighter;
   font-size: 0.75rem;
@@ -242,7 +320,7 @@ const onDayChange = (payload) => {
   transition: 0.2s;
 }
 .date span:hover {
-  color: hotpink;
+  color: #4ade80;
 }
 
 .wrapper-btn {

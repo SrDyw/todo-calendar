@@ -15,8 +15,13 @@ export const useUtils = () => {
     return parseInt(hour);
   }
 
+  const getMonth = index => {
+    
+  }
   return {
     getDayPrefix,
     getHour
   };
+
+
 };

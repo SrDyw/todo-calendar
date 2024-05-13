@@ -54,41 +54,39 @@ export default function useCalendar() {
     prefix.value = getDayPrefix(curr_day);
     lastWeekDayOfPrevMonth.value = dateData.lastWeekDayOfPrevMonth;
   };
-
-  const setupCalendar = () => {
+  const smoothTransitionBtwDates = (targetMonth, targetYear) => {
     const calendar = document.querySelector(".calendar");
     let timeOutToReset = null,
       timeOutToChange = null;
-    const smoothTransitionBtwDates = (targetMonth, targetYear) => {
-      const baseTimeTransition = 0.5;
-      const smoothTags = ["calendar-smooth-left", "calendar-smooth-right"];
+    const baseTimeTransition = 0.5;
+    const smoothTags = ["calendar-smooth-left", "calendar-smooth-right"];
+    if (
+      !calendar.classList.contains(smoothTags[0]) &&
+      !calendar.classList.contains(smoothTags[1])
+    ) {
       if (
-        !calendar.classList.contains(smoothTags[0]) &&
-        !calendar.classList.contains(smoothTags[1])
-      ) {
-        if (
-          targetYear < year.value ||
-          (targetYear == year.value && targetMonth < month.value)
-        )
-          calendar.classList.add(smoothTags[0]);
-        else calendar.classList.add(smoothTags[1]);
+        targetYear < year.value ||
+        (targetYear == year.value && targetMonth < month.value)
+      )
+        calendar.classList.add(smoothTags[0]);
+      else calendar.classList.add(smoothTags[1]);
 
-        timeOutToChange = setTimeout(() => {
-          month.value = targetMonth;
-          year.value = targetYear;
-          updateCalendar();
-          clearTimeout(timeOutToChange);
-        }, baseTimeTransition * 500);
+      timeOutToChange = setTimeout(() => {
+        month.value = targetMonth;
+        year.value = targetYear;
+        updateCalendar();
+        clearTimeout(timeOutToChange);
+      }, baseTimeTransition * 500);
 
-        timeOutToReset = setTimeout(() => {
-          calendar.classList.remove(smoothTags[0]);
-          calendar.classList.remove(smoothTags[1]);
+      timeOutToReset = setTimeout(() => {
+        calendar.classList.remove(smoothTags[0]);
+        calendar.classList.remove(smoothTags[1]);
 
-          clearTimeout(timeOutToReset);
-        }, baseTimeTransition * 1000);
-      }
-    };
-
+        clearTimeout(timeOutToReset);
+      }, baseTimeTransition * 1000);
+    }
+  };
+  const setupCalendar = () => {
     const wr_btns = document.querySelectorAll(".wrapper-btn");
     const todays_date = document.querySelector(".todays-date");
     wr_btns.forEach((w) => {
@@ -128,5 +126,6 @@ export default function useCalendar() {
     isLoadingData,
     updateCalendar,
     setupCalendar,
+    smoothTransitionBtwDates
   };
 }
