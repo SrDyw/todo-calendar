@@ -96,12 +96,19 @@ export default function useDays(month, year) {
           });
         }
         for (let day = 1; day <= dateData.daysInMonth; day++) {
+          let activity = null;
+          try {
+            activity = JSON.parse(getDataFromLocaStorage(day, month, year));
+            activity.todoList = JSON.parse(activity.todoList);
+            console.log(activity)
+          } catch {}
+
           currMonthData.push({
             monthTag: "currMonthData",
             dayNumber: day,
             month,
             year,
-            activity: JSON.parse(getDataFromLocaStorage(day, month, year)),
+            activity,
           });
         }
 

@@ -8,7 +8,7 @@ const props = defineProps({
 });
 const dayData = ref(props.data);
 
-const { getDayPrefix } = useUtils();
+const { getDayPrefix, getHour } = useUtils();
 const prefix = getDayPrefix(dayData?.dayNumber);
 
 const todoList = dayData.value.activity?.todoList;
@@ -28,27 +28,29 @@ if (todoList) {
   let minDistance = 24;
   let breakPointIndex = -1;
 
-  function getHour(timeString) {
-    // Divide la cadena en horas y minutos
-    let [hour, minute] = timeString.split(":");
-
-    // Convierte la hora a un número y la devuelve
-    return parseInt(hour);
-  }
   for (let i = 0; i < sortedTodoList.length; i++) {
     const hour = getHour(sortedTodoList[i].endHour);
+    // console.log(currentHour, hour);
     if (currentHour >= hour) continue;
 
     const distance = Math.abs(hour - currentHour);
+
     if (distance < minDistance) {
       minDistance = distance;
       breakPointIndex = i;
     }
   }
-  filteredTodoList.value = sortedTodoList.slice(
-    breakPointIndex,
-    breakPointIndex + 3
-  );
+  if (breakPointIndex !== -1) {
+    filteredTodoList.value = sortedTodoList.slice(
+      breakPointIndex,
+      breakPointIndex + 3
+    );
+  } else {
+    filteredTodoList.value = sortedTodoList.slice(
+      Math.max(sortedTodoList.length - 3, 0),
+      sortedTodoList.length
+    );
+  }
 
   leftActivities.value = todoList.length - (breakPointIndex + 3);
 }

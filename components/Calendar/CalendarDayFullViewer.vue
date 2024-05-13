@@ -1,4 +1,6 @@
 <script setup>
+import { useUtils } from "~/composables/useUtils";
+
 const isOpen = ref(false);
 const props = defineProps({
   leftActivities: Number,
@@ -15,76 +17,81 @@ watch(openOnChange, (a, b) => {
   isOpen.value = true;
 });
 
+const { getHour } = useUtils();
 const fullDayTodo = ref([]);
 
-const todoList = [
-  {
-    tag: "Clean House",
-    numericHour: {
-      initialHour: 8,
-      endHour: 10,
-    },
-    initialHour: "08:00",
-    endHour: "10:00",
-    done: true,
-  },
-  {
-    tag: "Grocery Shopping",
-    numericHour: {
-      initialHour: 10,
-      endHour: 12,
-    },
-    initialHour: "10:00",
-    endHour: "12:00",
-    done: false,
-  },
-  {
-    tag: "Work on Project",
-    numericHour: {
-      initialHour: 13,
-      endHour: 15,
-    },
-    initialHour: "13:00",
-    endHour: "15:00",
-    done: false,
-  },
-  {
-    tag: "Gym Workout",
-    numericHour: {
-      initialHour: 16,
-      endHour: 18,
-    },
-    initialHour: "16:00",
-    endHour: "18:00",
-    done: false,
-  },
-  {
-    tag: "Cook Dinner",
-    numericHour: {
-      initialHour: 19,
-      endHour: 21,
-    },
-    initialHour: "19:00",
-    endHour: "21:00",
-    done: false,
-  },
-  {
-    tag: "Read a Book",
-    numericHour: {
-      initialHour: 22,
-      endHour: 24,
-    },
-    initialHour: "22:00",
-    endHour: "24:00",
-    done: false,
-  },
-];
+// const todoList = [
+//   {
+//     tag: "Clean House",
+//     numericHour: {
+//       initialHour: 8,
+//       endHour: 10,
+//     },
+//     initialHour: "08:00",
+//     endHour: "10:00",
+//     done: true,
+//   },
+//   {
+//     tag: "Grocery Shopping",
+//     numericHour: {
+//       initialHour: 10,
+//       endHour: 12,
+//     },
+//     initialHour: "10:00",
+//     endHour: "12:00",
+//     done: false,
+//   },
+//   {
+//     tag: "Work on Project",
+//     numericHour: {
+//       initialHour: 13,
+//       endHour: 15,
+//     },
+//     initialHour: "13:00",
+//     endHour: "15:00",
+//     done: false,
+//   },
+//   {
+//     tag: "Gym Workout",
+//     numericHour: {
+//       initialHour: 16,
+//       endHour: 18,
+//     },
+//     initialHour: "16:00",
+//     endHour: "18:00",
+//     done: false,
+//   },
+//   {
+//     tag: "Cook Dinner",
+//     numericHour: {
+//       initialHour: 19,
+//       endHour: 21,
+//     },
+//     initialHour: "19:00",
+//     endHour: "21:00",
+//     done: false,
+//   },
+//   {
+//     tag: "Read a Book",
+//     numericHour: {
+//       initialHour: 22,
+//       endHour: 24,
+//     },
+//     initialHour: "22:00",
+//     endHour: "24:00",
+//     done: false,
+//   },
+// ];
+
+const todoList = props.data.activity?.todoList;
+
 const getTodo = (hour) => {
-  for (let todo of todoList) {
-    if (todo.numericHour.initialHour == hour) {
-      return todo;
+  if (todoList)
+    for (let todo of todoList) {
+      if (getHour(todo.initialHour) == hour) {
+        return todo;
+      }
     }
-  }
   return {
     initialHour: hour.toString().padStart(2, "0") + ":00",
   };
@@ -93,10 +100,18 @@ const getTodo = (hour) => {
 for (let h = 0; h < 24; h++) {
   fullDayTodo.value[h] = getTodo(h);
 }
+
+const onClickOnEventData = ref(false);
+const onClickOnEvent = (data) => {
+  onClickOnEventData.value = {
+    changer: !onClickOnEventData.value.changer,
+    payload: data,
+  };
+};
 </script>
 
 <template>
-  <div class="calendar-full-viewer ">
+  <div class="calendar-full-viewer">
     <UModal v-model="isOpen" fullscreen>
       <UCard
         :ui="{
@@ -145,6 +160,7 @@ for (let h = 0; h < 24; h++) {
                   'todo-inactive': !todo.tag,
                   'todo-active': todo.tag,
                 }"
+                @click="() => onClickOnEvent(todo)"
               >
                 <UCheckbox
                   v-model="todo.done"
@@ -161,6 +177,10 @@ for (let h = 0; h < 24; h++) {
           </div>
         </div>
       </UCard>
+      <calendar-add-activity
+        :on-click-on-event-data="onClickOnEventData"
+        :data="data"
+      />
     </UModal>
   </div>
 </template>
