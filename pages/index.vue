@@ -14,10 +14,11 @@ useHead({
 <template>
   <div class="content">
     <Calendar />
+    <Sidebar />
   </div>
 </template>
 
-<style >
+<style>
 .content {
   width: 100vw;
   height: 100vh;

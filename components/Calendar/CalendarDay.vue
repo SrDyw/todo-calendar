@@ -64,6 +64,7 @@ const onDayClick = () => {
   transition: 0.2s;
   background: transparent;
   position: relative;
+  color: black;
 }
 
 .days li:hover {
@@ -71,7 +72,7 @@ const onDayClick = () => {
   background: #e9e9e9;
 }
 .days .inactive {
-  color: #afafaf;
+  color: #969696;
 }
 
 .days .active {
