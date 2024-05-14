@@ -30,16 +30,9 @@ export default function useCalendar() {
 
     const { getDayPrefix } = useUtils();
 
-    const { getTestDays, getDaysFromLocal } = useDays(month.value, year.value);
+    const { getDaysFromLocal } = useDays();
 
-    // getTestDays(month.value, year.value).then((data) => {
-    //   console.log("asdasd");
-    //   daysData.value = data;
-    //   isLoadingData.value = false;
-
-    // });
-
-    getDaysFromLocal().then((data) => {
+    getDaysFromLocal(month.value, year.value).then((data) => {
       daysData.value = data;
       isLoadingData.value = false;
     });
@@ -126,6 +119,6 @@ export default function useCalendar() {
     isLoadingData,
     updateCalendar,
     setupCalendar,
-    smoothTransitionBtwDates
+    smoothTransitionBtwDates,
   };
 }

@@ -26,10 +26,33 @@ const {
   smoothTransitionBtwDates,
 } = useCalendar();
 
+const { getDaysFromLocal } = useDays();
+const currentDateData = ref();
+
+const timerToFetchCurrentDate = ref(null);
+const fetchCurrentDDate = () => {
+  const getLocalData = () => {
+    getDaysFromLocal(currentMonth, currentYear).then((data) => {
+      currentDateData.value = data;
+    });
+  };
+
+  getLocalData();
+
+  timerToFetchCurrentDate.value = setInterval(() => {
+    getLocalData();
+  }, 1000 * 10); // Every 10s
+};
+
 const mutableDaysData = ref(daysData);
 
 onMounted(() => {
   setupCalendar();
+  fetchCurrentDDate();
+});
+
+onBeforeUnmount(() => {
+  clearInterval(timerToFetchCurrentDate.value);
 });
 updateCalendar();
 
@@ -68,6 +91,24 @@ const travelToSelectedDate = () => {
   );
   gotoModalIsOpen.value = false;
 };
+
+const todaysEvent = ref(null);
+const { getHour } = useUtils();
+watch(currentDateData, (newVal) => {
+  console.log(newVal);
+  const today = new Date();
+  let monthTag = "";
+  const monthData = currentDateData.value["currMonthData"];
+  const dayData = monthData[today.getDate() - 1];
+  let todo = null;
+
+  for (let t of dayData.activity.todoList) {
+    if (getHour(t.initialHour) == today.getHours()) {
+      todo = t;
+    }
+  }
+  todaysEvent.value = { ...dayData.activity, todo };
+});
 </script>
 
 <template>
@@ -224,13 +265,10 @@ const travelToSelectedDate = () => {
         />
       </ul>
     </div>
-    <!-- <div class="footer">
-      <UAvatar
-        size="2xl"
-        src="https://avatars.githubusercontent.com/u/96890386?v=4"
-        alt="Avatar"
-      />
-    </div> -->
+    <div class="footer flex items-center justify-center">
+      <h2 class="text-4xl font-bold">{{ todaysEvent?.title }}</h2>
+      <p>{{ todaysEvent?.todo.tag }}</p>
+    </div>
   </div>
 </template>
 
@@ -242,7 +280,16 @@ const travelToSelectedDate = () => {
   --translation-value: 10px;
   --translation-duration: 0.5s;
 }
-
+.footer {
+  flex-direction: column;
+  text-align: center;
+}
+.footer h2 {
+  color: var(--active-color);
+}
+.footer p {
+  font-weight: bold;
+}
 .wrapper {
   background: white;
   color: var(--font-color);
@@ -412,6 +459,5 @@ const travelToSelectedDate = () => {
 .footer {
   width: 100%;
   height: 100%;
-  background: red;
 }
 </style>

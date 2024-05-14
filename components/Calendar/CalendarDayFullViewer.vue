@@ -101,7 +101,7 @@ const onEventChange = (data) => {
             <h2 class="text-3xl">Activities</h2>
             <ul class="h-[60vh]">
               <li
-                v-for="(todo) of fullDayTodo"
+                v-for="todo of fullDayTodo"
                 :key="todo"
                 class="activity-hour flex gap-4 justify-center items-center"
                 :class="{
@@ -118,12 +118,28 @@ const onEventChange = (data) => {
                 <div
                   class="activity-hour-info flex justify-between items-center"
                 >
-                  <p @click="() => onClickOnEvent(todo)" class="w-full h-full p-[10px]">
+                  <p
+                    @click="() => onClickOnEvent(todo)"
+                    class="w-full h-full p-[10px]"
+                  >
                     {{ todo.initialHour }}
-                    {{ todo.tag }}
+                    <span v-if="todo.tag">
+                      -
+                      {{ todo.endHour }}
+                    </span>
+                    <span class="todo-tag">
+                      {{ todo.tag }}
+                    </span>
+                    <span v-if="!todo.tag" class="no-activity-here"
+                      >No activity here</span
+                    >
                   </p>
                   <div class="hour-delete-btn" v-if="todo.tag">
-                    <calendar-delete-activity-modal :data="todo" :payload="data" @onRemoveActivity="onEventChange"/>
+                    <calendar-delete-activity-modal
+                      :data="todo"
+                      :payload="data"
+                      @onRemoveActivity="onEventChange"
+                    />
                   </div>
                 </div>
               </li>
@@ -168,6 +184,19 @@ const onEventChange = (data) => {
   mask-image: linear-gradient(to top, #fff 50%, transparent);
   z-index: 1;
 }
+
+.activities-wrapper ul {
+  padding-bottom: 20px;
+}
+.activities-wrapper ul::-webkit-scrollbar {
+  background: transparent;
+}
+
+.activities-wrapper ul::-webkit-scrollbar-thumb {
+  background: #4ade80;
+  border-radius: 10px;
+}
+
 .activity-hour {
   padding: 5px;
   font-size: 16px;
@@ -178,6 +207,15 @@ const onEventChange = (data) => {
   padding-inline: 5px;
   border-radius: 5px;
   transition: 0.1s;
+}
+.activity-hour-info .todo-tag {
+  font-weight: bold;
+  color: #69bb81;
+  margin-left: 10px;
+}
+.no-activity-here {
+  opacity: 0.5;
+  margin-left: 10px;
 }
 .activity-hour-info:hover {
   background: #16213d;

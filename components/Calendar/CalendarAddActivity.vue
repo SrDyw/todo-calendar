@@ -32,8 +32,8 @@ watch(onClickOnEventData, (a, b) => {
   );
 
   state.tag = onClickOnEventData.value.payload.tag;
-  state.initialHour = ihour;
-  state.endHour = Math.min(ihour + 1, 23);
+  state.initialHour = ihour + "";
+  state.endHour = Math.min(ihour + 1, 23) + "";
   mode.value = !state.tag ? "create" : "edit";
 });
 
@@ -126,6 +126,7 @@ const endHourSelected = ref(hours[1]);
               v-model="state.initialHour"
               :options="hours"
               disabled
+              trailing-icon=""
             />
           </UFormGroup>
           <UFormGroup
