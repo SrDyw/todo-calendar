@@ -95,7 +95,6 @@ const travelToSelectedDate = () => {
 const todaysEvent = ref(null);
 const { getHour } = useUtils();
 watch(currentDateData, (newVal) => {
-  console.log(newVal);
   const today = new Date();
   const monthData = currentDateData.value["currMonthData"];
   const dayData = monthData[today.getDate() - 1];
