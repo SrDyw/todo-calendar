@@ -11,6 +11,7 @@ const { onClickOnEventData } = toRefs(props);
 const isOpen = ref(false);
 const isLoading = ref(false);
 
+
 const hours = [];
 for (let i = 0; i < 24; i++) hours.push(i.toString());
 const state = reactive({
@@ -19,11 +20,15 @@ const state = reactive({
   endHour: hours[1],
 });
 
+
+const initialHourFormated = ref('0');
+
 const { modifyEvent } = useEvents();
 const toast = useToast();
 const emit = defineEmits(["onModifiedEvent"]);
 
 const mode = ref("create"); // or 'edit'
+
 
 watch(onClickOnEventData, (a, b) => {
   isOpen.value = true;
@@ -32,9 +37,11 @@ watch(onClickOnEventData, (a, b) => {
   );
 
   state.tag = onClickOnEventData.value.payload.tag;
-  state.initialHour = ihour + "";
-  state.endHour = Math.min(ihour + 1, 23) + "";
+  state.initialHour = ihour;
+  state.endHour = Math.min(ihour + 1, 23);
   mode.value = !state.tag ? "create" : "edit";
+
+  initialHourFormated.value = ihour + "";
 });
 
 const onModifiedEvent = (event) => {
@@ -59,6 +66,8 @@ async function onSubmit(event) {
 
   onModifiedEvent(response);
 }
+
+watch(initialHourFormated, (newVal) => state.initialHour = parseInt(newVal))
 
 const initialHourSelected = ref(hours[0]);
 const endHourSelected = ref(hours[1]);
@@ -123,7 +132,7 @@ const endHourSelected = ref(hours[1]);
         <div class="hours flex gap-4 w-full">
           <UFormGroup label="Initial Hour" class="w-full" name="initialHour">
             <USelectMenu
-              v-model="state.initialHour"
+              v-model="initialHourFormated"
               :options="hours"
               disabled
               trailing-icon=""
