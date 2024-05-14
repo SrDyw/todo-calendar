@@ -36,6 +36,7 @@ const updateTodoList = (list) => {
 
   for (let h = 0; h < 24; h++) {
     fullDayTodo.value[h] = getTodo(h);
+    console.log(fullDayTodo.value);
   }
 };
 
