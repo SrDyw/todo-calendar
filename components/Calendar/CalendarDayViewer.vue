@@ -11,51 +11,56 @@ const dayData = ref(props.data);
 const { getDayPrefix, getHour } = useUtils();
 const prefix = getDayPrefix(dayData?.dayNumber);
 
-const todoList = dayData.value.activity?.todoList;
+const todoList = ref(dayData.value.activity?.todoList);
 const filteredTodoList = ref(null);
 const leftActivities = ref(0);
 
-if (todoList) {
-  const sortedTodoList = todoList.sort(
-    (a, b) => a.initialHour - b.initialHour >= 0
-  ); // Sort by due date ascending
+const updateTodoList = (list) => {
+  if (todoList.value) {
+    const sortedTodoList = todoList.value.sort(
+      (a, b) => a.initialHour - b.initialHour >= 0
+    ); // Sort by due date ascending
 
-  // Get current hour
-  const now = new Date();
-  // let currentHour = 5;
-  let currentHour = now.getHours();
+    // Get current hour
+    const now = new Date();
+    // let currentHour = 5;
+    let currentHour = now.getHours();
 
-  let minDistance = 24;
-  let breakPointIndex = -1;
+    let minDistance = 24;
+    let breakPointIndex = -1;
 
-  for (let i = 0; i < sortedTodoList.length; i++) {
-    const hour = getHour(sortedTodoList[i].endHour);
-    // console.log(currentHour, hour);
-    if (currentHour >= hour) continue;
+    for (let i = 0; i < sortedTodoList.length; i++) {
+      const hour = getHour(sortedTodoList[i].endHour);
+      // console.log(currentHour, hour);
+      if (currentHour >= hour) continue;
 
-    const distance = Math.abs(hour - currentHour);
+      const distance = Math.abs(hour - currentHour);
 
-    if (distance < minDistance) {
-      minDistance = distance;
-      breakPointIndex = i;
+      if (distance < minDistance) {
+        minDistance = distance;
+        breakPointIndex = i;
+      }
+    }
+    if (breakPointIndex !== -1) {
+      filteredTodoList.value = sortedTodoList.slice(
+        breakPointIndex,
+        breakPointIndex + 3
+      );
+    } else {
+      filteredTodoList.value = sortedTodoList.slice(
+        Math.max(sortedTodoList.length - 3, 0),
+        sortedTodoList.length
+      );
     }
   }
-  if (breakPointIndex !== -1) {
-    filteredTodoList.value = sortedTodoList.slice(
-      breakPointIndex,
-      breakPointIndex + 3
-    );
-  } else {
-    filteredTodoList.value = sortedTodoList.slice(
-      Math.max(sortedTodoList.length - 3, 0),
-      sortedTodoList.length
-    );
-  }
+};
 
-  leftActivities.value = todoList.length - (breakPointIndex + 3);
-}
+updateTodoList(todoList);
 
-const emit = defineEmits(["onDayChange"]);
+watch(todoList, (newValue, oldValue) => {
+  updateTodoList(newValue);
+});
+const emit = defineEmits(["onDayChange", "onEventRemove"]);
 const onDayChange = (payload) => {
   const date = new Date();
   // const month = payload
@@ -71,7 +76,15 @@ const onCreatedEvent = (payload) => {
 const onRemoveEvent = (payload) => {
   dayData.value = { ...dayData.value, activity: null };
   onDayChange(dayData.value);
+  emit("onEventRemove", {});
 };
+
+const onEventChange = (payload) => {
+  dayData.value = payload;
+  todoList.value = dayData.value.activity?.todoList;
+  onDayChange(dayData.value);
+};
+
 let openFullViewModal;
 
 const openFullViewModalOnChange = ref(false);
@@ -138,6 +151,7 @@ openFullViewModal = () => {
         :leftActivities="leftActivities"
         :data="dayData"
         :open-on-change="openFullViewModalOnChange"
+        @on-event-change="onEventChange"
       />
     </div>
   </div>

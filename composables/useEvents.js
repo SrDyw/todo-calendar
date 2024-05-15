@@ -53,9 +53,13 @@ export default function useEvents() {
         let item = JSON.parse(localStorage.getItem(key));
 
         let todoList = item.todoList;
+        let activity = data.payload.activity;
         let activiySetted = false;
         for (let i = 0; i < todoList.length; i++) {
-          if (getHour(todoList[i].initialHour) == data.todoData.initialHour) {
+          if (
+            getHour(todoList[i].initialHour) ==
+            getHour(data.todoData.initialHour)
+          ) {
             todoList[i] = data.todoData;
             activiySetted = true;
             break;
@@ -65,10 +69,15 @@ export default function useEvents() {
           todoList.push(data.todoData);
         }
         item.todoList = todoList;
-
-        console.log(item);
         localStorage.setItem(key, JSON.stringify(item));
-        resolve({ ...data, todoList: [] });
+        resolve({
+          ...data.payload,
+          activity: {
+            title: activity.title,
+            description: activity.description,
+            todoList,
+          },
+        });
       }, Math.random() * 2000);
     });
   };

@@ -27,8 +27,6 @@ const {
 
 const mutableDaysData = ref(daysData);
 
-
-
 onMounted(() => {
   setupCalendar();
 });
@@ -60,7 +58,11 @@ const onDayChange = (payload) => {
 <template>
   <div>
     <UModal v-model="dayViewerOpen">
-      <CalendarDayViewer :data="dayPickedData" @on-day-change="onDayChange" />
+      <CalendarDayViewer
+        :data="dayPickedData"
+        @on-day-change="onDayChange"
+        @on-event-remove="dayViewerOpen = false"
+      />
       <UButton
         color="gray"
         variant="ghost"

@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const onOpenModal = () => {
-  console.log("pan con queso");
+  // console.log("pan con queso");
 };
 const { openOnChange } = toRefs(props);
 
@@ -20,86 +20,27 @@ watch(openOnChange, (a, b) => {
 const { getHour } = useUtils();
 const fullDayTodo = ref([]);
 
-// const todoList = [
-//   {
-//     tag: "Clean House",
-//     numericHour: {
-//       initialHour: 8,
-//       endHour: 10,
-//     },
-//     initialHour: "08:00",
-//     endHour: "10:00",
-//     done: true,
-//   },
-//   {
-//     tag: "Grocery Shopping",
-//     numericHour: {
-//       initialHour: 10,
-//       endHour: 12,
-//     },
-//     initialHour: "10:00",
-//     endHour: "12:00",
-//     done: false,
-//   },
-//   {
-//     tag: "Work on Project",
-//     numericHour: {
-//       initialHour: 13,
-//       endHour: 15,
-//     },
-//     initialHour: "13:00",
-//     endHour: "15:00",
-//     done: false,
-//   },
-//   {
-//     tag: "Gym Workout",
-//     numericHour: {
-//       initialHour: 16,
-//       endHour: 18,
-//     },
-//     initialHour: "16:00",
-//     endHour: "18:00",
-//     done: false,
-//   },
-//   {
-//     tag: "Cook Dinner",
-//     numericHour: {
-//       initialHour: 19,
-//       endHour: 21,
-//     },
-//     initialHour: "19:00",
-//     endHour: "21:00",
-//     done: false,
-//   },
-//   {
-//     tag: "Read a Book",
-//     numericHour: {
-//       initialHour: 22,
-//       endHour: 24,
-//     },
-//     initialHour: "22:00",
-//     endHour: "24:00",
-//     done: false,
-//   },
-// ];
-
-const todoList = props.data.activity?.todoList;
-
-const getTodo = (hour) => {
-  if (todoList)
-    for (let todo of todoList) {
-      if (getHour(todo.initialHour) == hour) {
-        return todo;
+const todoList = ref(props.data.activity?.todoList);
+const updateTodoList = (list) => {
+  const getTodo = (hour) => {
+    if (list)
+      for (let todo of list) {
+        if (getHour(todo.initialHour) == hour) {
+          return todo;
+        }
       }
-    }
-  return {
-    initialHour: hour.toString().padStart(2, "0") + ":00",
+    return {
+      initialHour: hour.toString().padStart(2, "0") + ":00",
+    };
   };
+
+  for (let h = 0; h < 24; h++) {
+    fullDayTodo.value[h] = getTodo(h);
+  }
 };
 
-for (let h = 0; h < 24; h++) {
-  fullDayTodo.value[h] = getTodo(h);
-}
+updateTodoList(todoList.value);
+watch(todoList, async (newVal) => updateTodoList(newVal));
 
 const onClickOnEventData = ref(false);
 const onClickOnEvent = (data) => {
@@ -107,6 +48,13 @@ const onClickOnEvent = (data) => {
     changer: !onClickOnEventData.value.changer,
     payload: data,
   };
+};
+
+const emit = defineEmits(["onEventChange"]);
+
+const onEventChange = (data) => {
+  todoList.value = data.event.activity?.todoList;
+  emit("onEventChange", data.event);
 };
 </script>
 
@@ -180,6 +128,7 @@ const onClickOnEvent = (data) => {
       <calendar-add-activity
         :on-click-on-event-data="onClickOnEventData"
         :data="data"
+        @on-modified-event="onEventChange"
       />
     </UModal>
   </div>

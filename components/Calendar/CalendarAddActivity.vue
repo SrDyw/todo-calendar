@@ -13,7 +13,6 @@ const isLoading = ref(false);
 
 const hours = [];
 for (let i = 0; i < 24; i++) hours.push(i.toString());
-
 const state = reactive({
   tag: undefined,
   initialHour: hours[0],
@@ -24,14 +23,18 @@ const { modifyEvent } = useEvents();
 const toast = useToast();
 const emit = defineEmits(["onModifiedEvent"]);
 
+const mode = ref("create"); // or 'edit'
+
 watch(onClickOnEventData, (a, b) => {
   isOpen.value = true;
   const ihour = Number.parseInt(
     onClickOnEventData.value.payload.initialHour.split(":")[0]
   );
 
+  state.tag = onClickOnEventData.value.payload.tag;
   state.initialHour = ihour;
   state.endHour = Math.min(ihour + 1, 23);
+  mode.value = !state.tag ? "create" : "edit";
 });
 
 const onModifiedEvent = (event) => {
@@ -41,6 +44,7 @@ const onModifiedEvent = (event) => {
 };
 
 async function onSubmit(event) {
+  isLoading.value = true;
   const response = await modifyEvent({
     todoData: {
       ...event.data,
@@ -49,6 +53,11 @@ async function onSubmit(event) {
     },
     payload: props.data,
   });
+  toast.add({ title: `Acitivity ${mode.value =='create' ? 'created' : 'modified'} successfuly`, timeout: 2000 });
+  isLoading.value = false;
+  isOpen.value = false;
+
+  onModifiedEvent(response);
 }
 
 const initialHourSelected = ref(hours[0]);
@@ -72,7 +81,7 @@ const endHourSelected = ref(hours[1]);
           <h3
             class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
           >
-            Create new activity
+            {{ mode == "create" ? "Create new activity" : "Modify activity" }}
           </h3>
           <UButton
             color="gray"
@@ -80,6 +89,7 @@ const endHourSelected = ref(hours[1]);
             icon="i-heroicons-x-mark-20-solid"
             class="-my-1"
             @click="isOpen = false"
+            :loading="isLoading"
           />
         </div>
       </template>
@@ -93,7 +103,7 @@ const endHourSelected = ref(hours[1]);
           label="Tag"
           class="w-full"
           name="tag"
-          :error="state.tag?.length > 15 && 'Your name is too long'"
+          :error="state.tag?.length > 25 && 'Your name is too long'"
           required
         >
           <UInput
@@ -138,11 +148,13 @@ const endHourSelected = ref(hours[1]);
         </div>
         <UButton
           icon="i-heroicons-pencil-square"
-          :label="`Create activity`"
+          :label="mode == 'create' ? `Create activity` : 'Apply changes'"
           type="submit"
           :loading="isLoading"
           :disabled="
-            state.tag?.length > 25 || state?.initialHour > state?.endHour
+            state.tag?.length > 25 ||
+            state?.initialHour > state?.endHour ||
+            isLoading
           "
         />
       </UForm>
