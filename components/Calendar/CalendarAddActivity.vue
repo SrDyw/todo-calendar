@@ -57,6 +57,7 @@ async function onSubmit(event) {
       ...event.data,
       initialHour: event.data.initialHour.toString().padStart(2, "0") + ":00",
       endHour: event.data.endHour.toString().padStart(2, "0") + ":00",
+      done: false
     },
     payload: props.data,
   });

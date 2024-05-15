@@ -9,7 +9,7 @@ const props = defineProps({
 const dayData = ref(props.data);
 
 const { getDayPrefix, getHour } = useUtils();
-const prefix = getDayPrefix(dayData?.dayNumber);
+const prefix = getDayPrefix(dayData?.value.dayNumber);
 
 const todoList = ref(dayData.value.activity?.todoList);
 const filteredTodoList = ref(null);
@@ -98,7 +98,7 @@ openFullViewModal = () => {
   <div class="picker-wrapper">
     <div class="header">
       <h2>
-        {{ dayData.dayNumber }}{{ prefix }}
+        {{ dayData.dayNumber }}<sup class="mr-[1ch]">{{ prefix }}</sup>
         <span class="opacity-50">of {{ months[dayData.month] }}</span>
       </h2>
 
@@ -139,6 +139,7 @@ openFullViewModal = () => {
         v-for="todo of filteredTodoList"
         :key="todo"
         :data="todo"
+        :payload="data"
       />
       <UButton
         icon="i-heroicons-pencil-square"

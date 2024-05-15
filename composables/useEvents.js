@@ -82,6 +82,7 @@ export default function useEvents() {
     });
   };
 
+
   const removeActivity = async (data) => {
     // Create the backend query for modify event
     const { getHour } = useUtils();

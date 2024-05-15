@@ -1,4 +1,5 @@
 <script setup>
+import useEvents from "~/composables/useEvents";
 import { useUtils } from "~/composables/useUtils";
 
 const isOpen = ref(false);
@@ -54,7 +55,39 @@ const emit = defineEmits(["onEventChange"]);
 
 const onEventChange = (data) => {
   todoList.value = data.event.activity?.todoList;
+  console.log(data);
   emit("onEventChange", data.event);
+};
+
+const updateTodoStatus = (todo) => {
+  const { modifyEvent } = useEvents();
+
+  // console.log(todoList);
+  // return;
+  const todoListClone = [...todoList.value];
+  for (let i = 0; i < todoListClone.length; i++) {
+    if (todoListClone[i].initialHour == todo.initialHour) {
+      todoListClone[i] = todo;
+      break;
+    }
+  }
+
+  modifyEvent({
+    payload: props.data,
+    todoData: todo,
+  }).then(() => {
+    console.log("modified");
+    todoList.value = todoListClone;
+    onEventChange({
+      event: {
+        ...props.data,
+        activity: {
+          ...props.data.activity,
+          todoList: todoListClone,
+        },
+      },
+    });
+  });
 };
 </script>
 
@@ -114,6 +147,7 @@ const onEventChange = (data) => {
                   name="notifications"
                   label=""
                   :disabled="!todo.tag"
+                  @click="() => updateTodoStatus(todo)"
                 />
                 <div
                   class="activity-hour-info flex justify-between items-center"

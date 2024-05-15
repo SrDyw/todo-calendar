@@ -264,10 +264,10 @@ watch(currentDateData, (newVal) => {
         />
       </ul>
     </div>
-    <div class="footer flex items-center justify-center">
+    <div class="footer flex items-center justify-center" >
       <span v-if="todaysEvent">Today's Event</span>
       <h2 class="text-4xl font-bold">{{ todaysEvent?.title }}</h2>
-      <p>{{ todaysEvent?.todo?.tag }}</p>
+      <p v-if="todaysEvent?.todo?.done == false">{{ todaysEvent?.todo?.tag }}</p>
     </div>
   </div>
 </template>

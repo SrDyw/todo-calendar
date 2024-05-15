@@ -1,8 +1,11 @@
 export const useUtils = () => {
   const getDayPrefix = (day) => {
-    if (day === 1) return "st";
-    if (day === 2) return "nd";
-    if (day === 3) return "rd";
+    const lastDigit = day % 10;
+    if (!(day > 10 && day < 14)) {
+      if (lastDigit === 1) return "st";
+      if (lastDigit === 2) return "nd";
+      if (lastDigit === 3) return "rd";
+    }
     return "th";
   };
 
@@ -15,13 +18,9 @@ export const useUtils = () => {
     return parseInt(hour);
   }
 
-  const getMonth = index => {
-    
-  }
+  const getMonth = (index) => {};
   return {
     getDayPrefix,
-    getHour
+    getHour,
   };
-
-
 };
