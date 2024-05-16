@@ -22,8 +22,10 @@ useHead({
   width: 100vw;
   height: 100vh;
   display: flex;
+  /* flex-direction: column; */
   justify-content: center;
   /* padding-top: 70px; */
   background: #363c4f;
+  position: relative;
 }
 </style>

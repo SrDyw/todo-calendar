@@ -264,11 +264,15 @@ watch(currentDateData, (newVal) => {
         />
       </ul>
     </div>
-    <div class="footer flex items-center justify-center" >
+    <div class="footer flex items-center justify-center">
       <span v-if="todaysEvent">Today's Event</span>
       <h2 class="text-4xl font-bold">{{ todaysEvent?.title }}</h2>
-      <p v-if="todaysEvent?.todo?.done == false">{{ todaysEvent?.todo?.tag }}</p>
+      <p v-if="todaysEvent?.todo?.done == false">
+        {{ todaysEvent?.todo?.tag }}
+      </p>
     </div>
+
+    <Footer />
   </div>
 </template>
 
@@ -300,10 +304,12 @@ watch(currentDateData, (newVal) => {
   /* height: 80vh; */
   transition: height 0.2s;
   border-radius: var(--round);
+  position: relative;
 
   display: flex;
   align-items: center;
   flex-direction: column;
+  overflow: hidden;
 }
 
 @media (max-width: 320px) {
@@ -459,5 +465,18 @@ watch(currentDateData, (newVal) => {
 .footer {
   width: 100%;
   height: 100%;
+}
+
+@media (max-height: 600px) {
+  .footer {
+    justify-content: start;
+  }
+
+  .footer > span {
+    font-size: 0.75rem;
+  }
+  .footer h2 {
+    font-size: 1rem;
+  }
 }
 </style>
